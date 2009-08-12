@@ -1,4 +1,5 @@
 # Copyright (c) 2007, Matt Pizzimenti (www.livelearncode.com)
+# Copyright (c) 2009, Nils o. Janus (we.bnam.es)
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without modification,
@@ -38,10 +39,11 @@ module RFacebook
     # options.next::          the page to redirect to after login
     # options.popup::         boolean, whether or not to use the popup style (defaults to false)
     # options.skipcookie::    boolean, whether to force new Facebook login (defaults to false)
-    # options.hidecheckbox::  boolean, whether to show the "infinite session" option checkbox
+    # options.hidecheckbox::  boolean, whether to show the "infinite session" option checkbox (deprecated by Facebook)
+    # options.ext_perm::      string, comma separated list of permissions you want to grant (see http://wiki.developers.facebook.com/index.php/Extended_permissions)
     def get_login_url(options={})
       # handle options
-      nextPage = options[:next] ||= nil
+      next_page = options[:next] ||= nil
       popup = (options[:popup] == nil) ? false : true
       skipcookie = (options[:skipcookie] == nil) ? false : true
       hidecheckbox = (options[:hidecheckbox] == nil) ? false : true
@@ -49,15 +51,35 @@ module RFacebook
       canvas = (options[:canvas] == nil) ? false : true
     
       # url pieces
-      optionalNext = (nextPage == nil) ? "" : "&next=#{CGI.escape(nextPage.to_s)}"
-      optionalPopup = (popup == true) ? "&popup=true" : ""
-      optionalSkipCookie = (skipcookie == true) ? "&skipcookie=true" : ""
-      optionalHideCheckbox = (hidecheckbox == true) ? "&hide_checkbox=true" : ""
-      optionalFrame = (frame == true) ? "&fbframe=true" : ""
-      optionalCanvas = (canvas == true) ? "&canvas=true" : ""
+      optional_next = (next_page == nil) ? "" : "&next=#{CGI.escape(next_page.to_s)}"
+      optional_popup = (popup == true) ? "&popup=true" : ""
+      optional_skip_cookie = (skipcookie == true) ? "&skipcookie=true" : ""
+      optional_hide_checkbox = (hidecheckbox == true) ? "&hide_checkbox=true" : ""
+      optional_profile_selector = (frame == true) ? "&fbframe=true" : ""
+      optional_canvas = (canvas == true) ? "&canvas=true" : ""
     
       # build and return URL
-      return "http://#{WWW_HOST}#{WWW_PATH_LOGIN}?v=1.0&api_key=#{@api_key}#{optionalPopup}#{optionalNext}#{optionalSkipCookie}#{optionalHideCheckbox}#{optionalFrame}#{optionalCanvas}"
+      return "http://#{WWW_HOST}#{WWW_PATH_LOGIN}?v=1.0&api_key=#{@api_key}#{optional_popup}#{optional_next}#{optional_skip_cookie}#{optional_hide_checkbox}#{optional_profile_selector}#{optional_canvas}"
+    end
+
+    # Gets the extended permission authentication URL for this application
+    #
+    # options.next::          the page to redirect to after login
+    # options.show_profile_selector:: See http://wiki.developers.facebook.com/index.php/Authorization_and_Authentication_for_Desktop_Applications#Prompting_for_Permissions
+    # options.ext_perm::      string, comma separated list of permissions you want to grant (see http://wiki.developers.facebook.com/index.php/Extended_permissions)
+    def get_permission_url(options={})
+      # handle options
+      next_page = options[:next] ||= nil
+      show_profile_selector = (options[:frame] == nil) ? false : true
+      ext_perm = options[:ext_perm] ||= nil
+
+      # url pieces
+      optional_next = (next_page == nil) ? "" : "&next=#{CGI.escape(next_page.to_s)}"
+      optional_profile_selector = (show_profile_selector == true) ? "&fbframe=true" : ""
+      optional_ext_perm = (ext_perm == true) ? "" : "&ext_perm=#{CGI.escape(ext_perm.to_s)}"
+
+      # build and return URL
+      return "http://#{WWW_HOST}#{WWW_PATH_PERMISSION}?v=1.0&api_key=#{@api_key}&display=popup&extern=1#{optional_next}#{optional_profile_selector}#{optional_ext_perm}"
     end
     
     # Gets the installation URL for this application
@@ -65,13 +87,13 @@ module RFacebook
     # options.next::  the page to redirect to after installation
     def get_install_url(options={})
       # handle options
-      nextPage = options[:next] ||= nil
+      next_page = options[:next] ||= nil
     
       # url pieces
-      optionalNext = (nextPage == nil) ? "" : "&next=#{CGI.escape(nextPage.to_s)}"
+      optional_next = (next_page == nil) ? "" : "&next=#{CGI.escape(next_page.to_s)}"
     
       # build and return URL
-      return "http://#{WWW_HOST}#{WWW_PATH_INSTALL}?api_key=#{@api_key}#{optionalNext}"
+      return "http://#{WWW_HOST}#{WWW_PATH_INSTALL}?api_key=#{@api_key}#{optional_next}"
     end
     
     # Gets the session information available after current user logs in.

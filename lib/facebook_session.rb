@@ -1,4 +1,5 @@
 # Copyright (c) 2007, Matt Pizzimenti (www.livelearncode.com)
+# Copyright (c) 2009, Nils o. Janus (we.bnam.es)
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without modification,
@@ -44,6 +45,7 @@ module RFacebook
 
   WWW_HOST                  = "www.facebook.com"
   WWW_PATH_LOGIN            = "/login.php"
+  WWW_PATH_PERMISSION       = "/connect/prompt_permissions.php"
   WWW_PATH_ADD              = "/add.php"
   WWW_PATH_INSTALL          = "/install.php"
   
